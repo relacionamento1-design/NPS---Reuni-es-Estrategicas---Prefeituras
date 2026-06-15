@@ -1,0 +1,168 @@
+import React, { useState, useEffect } from "react";
+import BrandHeader, { CidadeCSCLogo } from "./components/BrandHeader";
+import NPSWizardForm from "./components/NPSWizardForm";
+import NPSSummaryDashboard from "./components/NPSSummaryDashboard";
+import { Municipality, SurveyResponse } from "./types";
+import { MUNICIPALITIES, loadResponses, saveResponse, resetToDefault } from "./utils";
+import { Sparkle, ShieldCheck, HelpCircle } from "lucide-react";
+
+export default function App() {
+  // State for all responses
+  const [responses, setResponses] = useState<SurveyResponse[]>([]);
+  
+  // State for currently selected municipality
+  const [currentMunicipality, setCurrentMunicipality] = useState<Municipality>(
+    MUNICIPALITIES.find((m) => m.id === "santana-de-parnaiba") || MUNICIPALITIES[0]
+  );
+
+  // Toggle mode: false = survey wizard, true = admin dashboard
+  const [isAdminMode, setIsAdminMode] = useState<boolean>(false);
+
+  // Load from local storage on mount
+  useEffect(() => {
+    const loaded = loadResponses();
+    setResponses(loaded);
+  }, []);
+
+  // Handle new submission
+  const handleSurveySubmit = (newResponseData: Omit<SurveyResponse, "id" | "timestamp">) => {
+    const completeResponse: SurveyResponse = {
+      ...newResponseData,
+      id: `rep-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      timestamp: new Date().toISOString()
+    };
+    
+    const updated = saveResponse(completeResponse);
+    setResponses(updated);
+  };
+
+  // Handle resetting responses database to default seeded data
+  const handleResetData = () => {
+    if (confirm("Deseja realmente resetar todas as respostas para as predefinições estratégicas de demonstração?")) {
+      const restored = resetToDefault();
+      setResponses(restored);
+    }
+  };
+
+  // Handle simulated inline add (for dashboard demonstratives)
+  const handleAddNewResponseSimulated = (res: SurveyResponse) => {
+    const updated = saveResponse(res);
+    setResponses(updated);
+  };
+
+  // Secret Click counter on Logo to toggle admin mode elegantly
+  const [logoClicks, setLogoClicks] = useState<number>(0);
+  const handleLogoClick = () => {
+    setLogoClicks((prev) => {
+      const next = prev + 1;
+      if (next >= 5) {
+        setIsAdminMode(!isAdminMode);
+        return 0;
+      }
+      return next;
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-[#040815] bg-[radial-gradient(#14223c_1.2px,transparent_1.2px)] [background-size:24px_24px] text-slate-100 flex flex-col font-sans selection:bg-[#F58F22]/30 antialiased selection:text-white relative">
+      
+      {/* Centered Top Brand Area */}
+      <div className="text-center max-w-2xl mx-auto pt-10 pb-6 sm:pb-8 animate-fade-in relative select-none">
+        <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-48 bg-[#14A3A1]/5 rounded-full blur-[60px] pointer-events-none" />
+        
+        {/* Centered Logo with 5-click secret admin toggle */}
+        <div 
+          onClick={handleLogoClick}
+          className="inline-block cursor-pointer transition-transform duration-300 hover:scale-[1.03] active:scale-[0.98]"
+          title="Clique 5 vezes para alternar o painel"
+        >
+          <CidadeCSCLogo className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 drop-shadow-[0_4px_20px_rgba(245,143,34,0.15)] relative z-10" />
+        </div>
+
+        <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight mb-1 relative z-10 font-sans">
+          REUNIÕES ESTRATÉGICAS 2026
+        </h1>
+        
+        <div className="flex items-center justify-center mb-3 relative z-10">
+          <span className="bg-[#F58F22]/10 text-[#F58F22] text-[10.5px] font-black px-3 py-1 rounded-md uppercase tracking-widest font-sans border border-[#F58F22]/20">
+            Plataforma CSC
+          </span>
+        </div>
+        
+        <p className="text-slate-400 text-xs sm:text-sm leading-relaxed max-w-md mx-auto relative z-10 font-sans font-medium px-4">
+          {isAdminMode 
+            ? "Painel de Consolidação Técnica e Indicadores de Parceria das Prefeituras Anfitriãs"
+            : "Avaliação de parceria e coprodução técnica das prefeituras brasileiras anfitriãs e coorganizadoras dos encontros regionais."}
+        </p>
+
+        {isAdminMode && (
+          <div className="mt-4 inline-flex items-center space-x-2 bg-[#F58F22]/10 border border-[#F58F22]/20 px-3 py-1 rounded-full relative z-10 animate-pulse">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#F58F22]" />
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#F58F22]">
+              Área Executiva do Conselho
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Main Content Area */}
+      <main id="main-content-area" className="flex-grow pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        
+        {/* Dynamic Context Header matching the requested screenshot setup */}
+        {isAdminMode && (
+          <div className="mb-6 max-w-2xl mx-auto bg-[#0B1528] py-4 px-6 rounded-2xl border border-[#1E3E8C]/30 flex flex-wrap items-center justify-between gap-3 animate-fade-in">
+            <div className="flex items-center space-x-3">
+              <div className="bg-[#1E3E8C]/25 p-2 rounded-xl text-[#14A3A1] border border-[#1E3E8C]/45 shadow-[0_0_10px_rgba(20,163,161,0.1)]">
+                <ShieldCheck className="w-4 h-4 text-[#F58F22]" />
+              </div>
+              <div>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Painel Autenticado de Consolidação</span>
+                <span className="text-xs font-bold text-white">Conselho Estratégico Corporativo</span>
+              </div>
+            </div>
+            <div className="text-[10.5px] text-slate-400 font-bold font-sans flex items-center space-x-3">
+              <div>
+                <span>Senha padrão:</span>
+                <span className="font-mono text-[#F58F22] bg-[#F58F22]/10 border border-[#F58F22]/20 px-2.5 py-0.5 rounded ml-1.5">prefeitura2026</span>
+              </div>
+              <button
+                onClick={() => setIsAdminMode(false)}
+                className="text-xs font-bold text-slate-300 hover:text-white bg-slate-800/60 hover:bg-slate-700/60 px-3 py-1.5 rounded-lg border border-slate-700 transition cursor-pointer"
+              >
+                Voltar à Pesquisa
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Core Component Views with Motion Transitions */}
+        <div className="transition-all duration-300">
+          {!isAdminMode ? (
+            <NPSWizardForm
+              municipality={currentMunicipality}
+              onSubmit={handleSurveySubmit}
+            />
+          ) : (
+            <NPSSummaryDashboard
+              responses={responses}
+              municipalities={MUNICIPALITIES}
+              onResetData={handleResetData}
+              onAddNewResponseSimulated={handleAddNewResponseSimulated}
+            />
+          )}
+        </div>
+
+      </main>
+
+      {/* Tiny almost fully transparent trigger for admin console at the absolute bottom - zero clutter */}
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 opacity-5 hover:opacity-100 transition-opacity duration-300 text-[9px] font-mono select-none">
+        <button 
+          onClick={() => setIsAdminMode(!isAdminMode)} 
+          className="text-slate-500 hover:text-[#14A3A1] cursor-pointer"
+        >
+          {isAdminMode ? ":: view form ::" : ":: view admin ::"}
+        </button>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,6 @@
+{
+  "name": "NPS Prefeituras CSC",
+  "description": "Pesquisa de satisfação e NPS para prefeituras participantes das Reuniões Estratégicas da Plataforma Connected Smart Cities.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
