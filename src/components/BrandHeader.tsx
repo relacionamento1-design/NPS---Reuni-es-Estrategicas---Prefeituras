@@ -15,78 +15,76 @@ export function CidadeCSCLogo({ className = "w-12 h-12" }: { className?: string 
   return (
     <svg className={className} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        {/* Glow and Drop Shadow effects for high-end professional appearance */}
-        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#000000" floodOpacity="0.25" />
-        </filter>
-        
-        {/* Gradients for node connection aesthetics */}
-        <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#14A3A1" />
-          <stop offset="100%" stopColor="#F58F22" />
+        {/* Precise linear gradients matched to the official Plataforma CSC colors */}
+        <linearGradient id="grad0" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#F58F22" /> {/* Top: Orange */}
+          <stop offset="100%" stopColor="#1E3E8C" /> {/* Bottom: Navy Blue */}
         </linearGradient>
+        <linearGradient id="grad45" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#8CC63F" /> {/* Top-Right: Lime Green */}
+          <stop offset="100%" stopColor="#7F4FA0" /> {/* Bottom-Left: Violet */}
+        </linearGradient>
+        <linearGradient id="grad90" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#7F4FA0" /> {/* Left: Violet */}
+          <stop offset="100%" stopColor="#14A3A1" /> {/* Right: Teal/Cyan */}
+        </linearGradient>
+        <linearGradient id="grad135" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#F58F22" /> {/* Top-Left: Red-Orange */}
+          <stop offset="100%" stopColor="#14A3A1" /> {/* Bottom-Right: Teal */}
+        </linearGradient>
+        
+        {/* Soft elegant glow behind the white hexagon */}
+        <filter id="hexaGlow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="0" stdDeviation="5" floodColor="#F58F22" floodOpacity="0.22" />
+          <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#000000" floodOpacity="0.15" />
+        </filter>
       </defs>
 
-      {/* Symmetrical High-Tech "Smart Cities" Network Connections (Constellation Grid) */}
-      {/* 1. Outer rings to give a "radar/sphere" feel */}
-      <circle cx="100" cy="100" r="64" stroke="#1E3E8C" strokeWidth="1" strokeDasharray="3 3" opacity="0.35" />
-      <circle cx="100" cy="100" r="44" stroke="#14A3A1" strokeWidth="1" strokeDasharray="4 4" opacity="0.25" />
+      {/* 4 overlapping capsules at 0, 45, 90, and 135 degrees with 0.88 opacity for beautiful, translucent layer blending */}
+      {/* 1. Vertical Capsule (0 deg) */}
+      <rect x="77" y="29" width="46" height="142" rx="23" fill="url(#grad0)" opacity="0.88" />
 
-      {/* 2. Core connectivity circuit lines representing modern networked systems */}
-      {/* Center spoke radial lines */}
-      <line x1="100" y1="100" x2="100" y2="36" stroke="#475569" strokeWidth="1.5" opacity="0.7" />
-      <line x1="100" y1="100" x2="155.4" y2="68" stroke="#475569" strokeWidth="1.5" opacity="0.7" />
-      <line x1="100" y1="100" x2="155.4" y2="132" stroke="#475569" strokeWidth="1.5" opacity="0.7" />
-      <line x1="100" y1="100" x2="100" y2="164" stroke="#475569" strokeWidth="1.5" opacity="0.7" />
-      <line x1="100" y1="100" x2="44.6" y2="132" stroke="#475569" strokeWidth="1.5" opacity="0.7" />
-      <line x1="100" y1="100" x2="44.6" y2="68" stroke="#475569" strokeWidth="1.5" opacity="0.7" />
+      {/* 2. Diagonal 1 (45 deg) */}
+      <rect x="77" y="29" width="46" height="142" rx="23" transform="rotate(45 100 100)" fill="url(#grad45)" opacity="0.88" />
 
-      {/* Outer boundary octagon/hexagon line loops */}
+      {/* 3. Horizontal (90 deg) */}
+      <rect x="77" y="29" width="46" height="142" rx="23" transform="rotate(90 100 100)" fill="url(#grad90)" opacity="0.88" />
+
+      {/* 4. Diagonal 2 (135 deg) */}
+      <rect x="77" y="29" width="46" height="142" rx="23" transform="rotate(135 100 100)" fill="url(#grad135)" opacity="0.88" />
+
+      {/* Perfectly rounded white hexagon container matching the official Cidade CSC Logo */}
       <polygon 
-        points="100,36 155.4,68 155.4,132 100,164 44.6,132 44.6,68" 
-        stroke="url(#lineGrad)" 
-        strokeWidth="2" 
+        points="78,62 122,62 144,100 122,138 78,138 56,100" 
+        fill="#FFFFFF" 
+        stroke="#FFFFFF" 
+        strokeWidth="18" 
         strokeLinejoin="round" 
-        opacity="0.6"
+        filter="url(#hexaGlow)"
       />
 
-      {/* 3. Smart Cities Constellation Nodes (Interactive colored vertices) */}
-      <circle cx="100" cy="36" r="8" fill="#F58F22" filter="url(#glow)" />   {/* Orange */}
-      <circle cx="155.4" cy="68" r="8" fill="#8CC63F" filter="url(#glow)" /> {/* Lime Green */}
-      <circle cx="155.4" cy="132" r="8" fill="#14A3A1" filter="url(#glow)" />{/* Teal */}
-      <circle cx="100" cy="164" r="8" fill="#1E3E8C" filter="url(#glow)" />  {/* Navy Blue */}
-      <circle cx="44.6" cy="132" r="8" fill="#7F4FA0" filter="url(#glow)" /> {/* Purple */}
-      <circle cx="44.6" cy="68" r="8" fill="#F58F22" filter="url(#glow)" />   {/* Accent Orange */}
-
-      {/* 4. Elegant circular high-contrast container in the center */}
-      <circle cx="100" cy="100" r="42" fill="#FFFFFF" filter="url(#shadow)" stroke="#E2E8F0" strokeWidth="1" />
-
-      {/* 5. Minimalist & high-legibility typographic mark */}
+      {/* Inside Text matching the official Cidade CSC Logo styling with the premium Montserrat font */}
       <text 
         x="100" 
-        y="91" 
-        fill="#1E3E8C" 
-        fontSize="12.5" 
+        y="93" 
+        fill="#F58F22" 
+        fontSize="17.5" 
         fontWeight="800" 
         fontFamily='"Montserrat", "Inter", sans-serif' 
         textAnchor="middle" 
-        letterSpacing="0.2"
+        letterSpacing="-0.3"
       >
         Cidade
       </text>
       <text 
         x="100" 
-        y="120" 
+        y="129" 
         fill="#F58F22" 
-        fontSize="24" 
+        fontSize="34" 
         fontWeight="900" 
         fontFamily='"Montserrat", "Inter", sans-serif' 
         textAnchor="middle" 
-        letterSpacing="-0.8"
+        letterSpacing="-1.2"
       >
         CSC
       </text>
