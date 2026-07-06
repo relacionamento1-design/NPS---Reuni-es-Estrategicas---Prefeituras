@@ -319,6 +319,16 @@ export function resetToDefault(): SurveyResponse[] {
   }
 }
 
+export function clearAllResponses(): SurveyResponse[] {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+    return [];
+  } catch (error) {
+    console.error("Erro ao zerar dados", error);
+    return [];
+  }
+}
+
 export function exportToCSV(responses: SurveyResponse[]): void {
   const headers = [
     "ID",

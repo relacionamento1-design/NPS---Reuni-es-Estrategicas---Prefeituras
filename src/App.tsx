@@ -3,8 +3,8 @@ import BrandHeader, { CidadeCSCLogo } from "./components/BrandHeader";
 import NPSWizardForm from "./components/NPSWizardForm";
 import NPSSummaryDashboard from "./components/NPSSummaryDashboard";
 import { Municipality, SurveyResponse } from "./types";
-import { MUNICIPALITIES, loadResponses, saveResponse, resetToDefault } from "./utils";
-import { Sparkle, ShieldCheck, HelpCircle } from "lucide-react";
+import { MUNICIPALITIES, loadResponses, saveResponse, resetToDefault, clearAllResponses } from "./utils";
+import { Sparkle, ShieldCheck, HelpCircle, Lock, FileText } from "lucide-react";
 
 export default function App() {
   // State for all responses
@@ -38,10 +38,14 @@ export default function App() {
 
   // Handle resetting responses database to default seeded data
   const handleResetData = () => {
-    if (confirm("Deseja realmente resetar todas as respostas para as predefinições estratégicas de demonstração?")) {
-      const restored = resetToDefault();
-      setResponses(restored);
-    }
+    const restored = resetToDefault();
+    setResponses(restored);
+  };
+
+  // Handle completely clearing responses database (zeroing out)
+  const handleClearData = () => {
+    const cleared = clearAllResponses();
+    setResponses(cleared);
   };
 
   // Handle simulated inline add (for dashboard demonstratives)
@@ -66,6 +70,46 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#040815] bg-[radial-gradient(#14223c_1.2px,transparent_1.2px)] [background-size:24px_24px] text-slate-100 flex flex-col font-sans selection:bg-[#F58F22]/30 antialiased selection:text-white relative">
       
+      {/* Sticky Top Navigation Bar to make Admin Panel perfectly visible and accessible */}
+      <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-[#040815]/80 border-b border-[#1E3E8C]/20 px-4 sm:px-6 lg:px-8 shadow-sm">
+        <div className="max-w-7xl mx-auto h-16 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-[#070e1f] border border-[#14A3A1]/30">
+              <CidadeCSCLogo className="w-6 h-6" />
+            </div>
+            <div>
+              <span className="text-xs font-black text-white uppercase tracking-wider block font-sans">
+                Plataforma Connected Smart Cities
+              </span>
+              <span className="text-[9px] text-[#14A3A1] font-mono uppercase tracking-widest block -mt-0.5">
+                NPS Executive Dashboard
+              </span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setIsAdminMode(!isAdminMode)}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border shadow-md cursor-pointer ${
+              isAdminMode 
+                ? "bg-[#1E3E8C]/20 hover:bg-[#1E3E8C]/35 text-[#F58F22] border-[#1E3E8C]/30"
+                : "bg-gradient-to-r from-[#14A3A1] to-[#8ac926] hover:scale-[1.02] active:scale-[0.98] text-[#070e1f] border-transparent font-black"
+            }`}
+          >
+            {isAdminMode ? (
+              <>
+                <FileText className="w-3.5 h-3.5" />
+                <span>Voltar à Pesquisa</span>
+              </>
+            ) : (
+              <>
+                <Lock className="w-3.5 h-3.5 text-[#070e1f]" />
+                <span>Acessar Painel ADM</span>
+              </>
+            )}
+          </button>
+        </div>
+      </header>
+
       {/* Centered Top Brand Area */}
       <div className="text-center max-w-2xl mx-auto pt-10 pb-6 sm:pb-8 animate-fade-in relative select-none">
         <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-48 bg-[#14A3A1]/5 rounded-full blur-[60px] pointer-events-none" />
@@ -121,10 +165,6 @@ export default function App() {
               </div>
             </div>
             <div className="text-[10.5px] text-slate-400 font-bold font-sans flex items-center space-x-3">
-              <div>
-                <span>Senha padrão:</span>
-                <span className="font-mono text-[#F58F22] bg-[#F58F22]/10 border border-[#F58F22]/20 px-2.5 py-0.5 rounded ml-1.5">prefeitura2026</span>
-              </div>
               <button
                 onClick={() => setIsAdminMode(false)}
                 className="text-xs font-bold text-slate-300 hover:text-white bg-slate-800/60 hover:bg-slate-700/60 px-3 py-1.5 rounded-lg border border-slate-700 transition cursor-pointer"
@@ -147,6 +187,7 @@ export default function App() {
               responses={responses}
               municipalities={MUNICIPALITIES}
               onResetData={handleResetData}
+              onClearData={handleClearData}
               onAddNewResponseSimulated={handleAddNewResponseSimulated}
             />
           )}

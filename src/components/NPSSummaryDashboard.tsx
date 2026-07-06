@@ -30,6 +30,7 @@ interface NPSSummaryDashboardProps {
   responses: SurveyResponse[];
   municipalities: Municipality[];
   onResetData: () => void;
+  onClearData: () => void;
   onAddNewResponseSimulated: (res: SurveyResponse) => void;
 }
 
@@ -37,12 +38,17 @@ export default function NPSSummaryDashboard({
   responses,
   municipalities,
   onResetData,
+  onClearData,
   onAddNewResponseSimulated
 }: NPSSummaryDashboardProps) {
   // Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [passwordInput, setPasswordInput] = useState<string>("");
   const [authError, setAuthError] = useState<string>("");
+
+  // Confirmation Modal States
+  const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
+  const [showRestoreConfirm, setShowRestoreConfirm] = useState<boolean>(false);
 
   // Filters State
   const [selectedMuniFilter, setSelectedMuniFilter] = useState<string>("all");
@@ -54,11 +60,11 @@ export default function NPSSummaryDashboard({
   // Authentication Handle
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordInput === "prefeitura2026") {
+    if (passwordInput === "csc2026") {
       setIsAuthenticated(true);
       setAuthError("");
     } else {
-      setAuthError("Senha incorreta. Tente utilizar a credencial padrão: prefeitura2026");
+      setAuthError("Senha incorreta. Por favor, insira a credencial administrativa correta.");
     }
   };
 
@@ -252,12 +258,24 @@ export default function NPSSummaryDashboard({
             <span>Simular Relato</span>
           </button>
 
-          {/* Reset database button */}
+          {/* Reset/Clear database button */}
           <button
-            onClick={onResetData}
-            className="flex items-center space-x-1.5 py-2 px-3.5 bg-rose-500/10 hover:bg-rose-500/15 text-rose-450 border border-rose-500/20 rounded-xl text-xs font-bold transition cursor-pointer"
+            onClick={() => setShowResetConfirm(true)}
+            className="flex items-center space-x-1.5 py-2 px-3.5 bg-rose-500/10 hover:bg-rose-500/15 text-rose-400 border border-rose-500/20 rounded-xl text-xs font-bold transition cursor-pointer"
+            title="Apagar todas as respostas e zerar os indicadores"
           >
-            <span>Limpar Lote</span>
+            <Database className="w-3.5 h-3.5 text-rose-400" />
+            <span>Zerar Banco (Limpar Lote)</span>
+          </button>
+
+          {/* Restore pre-seeded responses */}
+          <button
+            onClick={() => setShowRestoreConfirm(true)}
+            className="flex items-center space-x-1.5 py-2 px-3.5 bg-sky-500/10 hover:bg-sky-500/15 text-sky-400 border border-sky-500/20 rounded-xl text-xs font-bold transition cursor-pointer"
+            title="Restaurar dados de demonstração da Plataforma"
+          >
+            <RefreshCw className="w-3.5 h-3.5 text-sky-400" />
+            <span>Restaurar Demo</span>
           </button>
 
           {/* Export CSV */}
@@ -695,6 +713,92 @@ export default function NPSSummaryDashboard({
           </div>
         )}
       </div>
+
+      {/* Custom Confirmation Modal - Zerar Banco */}
+      {showResetConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[#070E1F] border border-rose-500/40 rounded-[24px] max-w-md w-full p-6 sm:p-8 shadow-2xl text-center space-y-5">
+            <div className="bg-rose-500/10 text-rose-400 w-14 h-14 rounded-2xl flex items-center justify-center mx-auto border border-rose-500/20">
+              <ShieldAlert className="w-6 h-6" />
+            </div>
+            
+            <div className="space-y-2">
+              <h3 className="text-lg font-black text-white tracking-tight">
+                Confirmar Limpeza Total
+              </h3>
+              <p className="text-xs text-slate-450 leading-relaxed">
+                Você tem certeza que deseja limpar todo o lote de dados? Isso apagará definitivamente todas as respostas e zerará os indicadores no painel.
+              </p>
+              <p className="text-[10px] text-rose-400/80 font-semibold bg-rose-500/5 py-2 px-3 rounded-lg border border-rose-500/10 inline-block w-full">
+                Esta ação é irreversível e removerá todas as submissões atuais.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowResetConfirm(false)}
+                className="w-full sm:flex-1 py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 transition cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onClearData();
+                  setShowResetConfirm(false);
+                }}
+                className="w-full sm:flex-1 py-2.5 px-4 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white text-xs font-black rounded-xl border border-rose-500/30 shadow-md transition cursor-pointer"
+              >
+                Limpar Banco (Zerar)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Confirmation Modal - Restaurar Demo */}
+      {showRestoreConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[#070E1F] border border-sky-500/40 rounded-[24px] max-w-md w-full p-6 sm:p-8 shadow-2xl text-center space-y-5">
+            <div className="bg-sky-500/10 text-sky-400 w-14 h-14 rounded-2xl flex items-center justify-center mx-auto border border-sky-500/20">
+              <RefreshCw className="w-6 h-6" />
+            </div>
+            
+            <div className="space-y-2">
+              <h3 className="text-lg font-black text-white tracking-tight">
+                Restaurar Lote de Demonstração
+              </h3>
+              <p className="text-xs text-slate-450 leading-relaxed">
+                Deseja restaurar as 9 respostas estratégicas predefinidas da plataforma Connected Smart Cities para fins de demonstração?
+              </p>
+              <p className="text-[10px] text-sky-400/80 font-semibold bg-sky-500/5 py-2 px-3 rounded-lg border border-sky-500/10 inline-block w-full">
+                Os dados atuais do lote serão substituídos pelas respostas de demonstração padrão.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowRestoreConfirm(false)}
+                className="w-full sm:flex-1 py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 transition cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onResetData();
+                  setShowRestoreConfirm(false);
+                }}
+                className="w-full sm:flex-1 py-2.5 px-4 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white text-xs font-black rounded-xl border border-sky-500/30 shadow-md transition cursor-pointer"
+              >
+                Restaurar Demo
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
