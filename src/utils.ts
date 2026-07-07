@@ -1,4 +1,5 @@
 import { SurveyResponse, Municipality } from "./types";
+import { supabase } from "./supabaseClient";
 
 export const MUNICIPALITIES: Municipality[] = [
   { id: "ponta-pora", name: "Ponta Porã", state: "MS" },
@@ -281,52 +282,99 @@ export const PRE_SEEDED_RESPONSES: SurveyResponse[] = [
   }
 ];
 
-const STORAGE_KEY = "csc_prefe_nps_survey_responses_v2";
-
-export function loadResponses(): SurveyResponse[] {
+export async function loadResponses(): Promise<SurveyResponse[]> {
   try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (!data) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(PRE_SEEDED_RESPONSES));
-      return PRE_SEEDED_RESPONSES;
+    const { data, error } = await supabase
+      .from('nps_evento_reunioes_estrategicas_prefeituras')
+      .select('*')
+      .order('created_at', { ascending: false });
+      
+    if (error) {
+      console.error("Erro ao carregar respostas do Supabase", error);
+      return [];
     }
-    return JSON.parse(data);
+    
+    return (data || []).map(mapFromSupabase);
   } catch (error) {
-    console.error("Erro ao carregar respostas do localStorage", error);
-    return PRE_SEEDED_RESPONSES;
-  }
-}
-
-export function saveResponse(response: SurveyResponse): SurveyResponse[] {
-  try {
-    const current = loadResponses();
-    const updated = [response, ...current];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    return updated;
-  } catch (error) {
-    console.error("Erro ao salvar resposta no localStorage", error);
+    console.error("Erro inesperado ao carregar", error);
     return [];
   }
 }
 
-export function resetToDefault(): SurveyResponse[] {
+export async function saveResponse(response: SurveyResponse): Promise<SurveyResponse[]> {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(PRE_SEEDED_RESPONSES));
-    return PRE_SEEDED_RESPONSES;
+    const { error } = await supabase
+      .from('nps_evento_reunioes_estrategicas_prefeituras')
+      .insert([mapToSupabase(response)]);
+      
+    if (error) {
+      console.error("Erro ao salvar resposta no Supabase", error);
+    }
+    return await loadResponses();
   } catch (error) {
-    console.error("Erro ao reiniciar dados", error);
-    return PRE_SEEDED_RESPONSES;
+    console.error("Erro inesperado ao salvar", error);
+    return await loadResponses();
   }
 }
 
-export function clearAllResponses(): SurveyResponse[] {
+export async function clearAllResponses(): Promise<SurveyResponse[]> {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+    const { error } = await supabase
+      .from('nps_evento_reunioes_estrategicas_prefeituras')
+      .delete()
+      .neq('id', 'dummy_value_to_delete_all');
+      
+    if (error) {
+      console.error("Erro ao zerar dados no Supabase", error);
+    }
     return [];
   } catch (error) {
-    console.error("Erro ao zerar dados", error);
+    console.error("Erro inesperado ao zerar", error);
     return [];
   }
+}
+
+function mapFromSupabase(row: any): SurveyResponse {
+  return {
+    id: row.id,
+    timestamp: row.created_at,
+    municipalityId: row.municipality_id,
+    municipalityName: row.municipality_name,
+    contactName: row.contact_name,
+    contactRole: row.contact_role,
+    contactEmail: row.contact_email,
+    contactPhone: row.contact_phone || "",
+    ratingNps: row.rating_nps,
+    npsJustification: row.nps_justification || "",
+    ratingMorningActivities: row.rating_morning_activities,
+    impactOptions: row.impact_options || [],
+    impactOther: row.impact_other || "",
+    suggestionsImprovement: row.suggestions_improvement || "",
+    ratingFutureEngagement: row.rating_future_engagement,
+    engagementFormat: row.engagement_format || "",
+    isPreseeded: false
+  };
+}
+
+function mapToSupabase(res: SurveyResponse): any {
+  return {
+    id: res.id,
+    created_at: res.timestamp,
+    municipality_id: res.municipalityId,
+    municipality_name: res.municipalityName,
+    contact_name: res.contactName,
+    contact_role: res.contactRole,
+    contact_email: res.contactEmail,
+    contact_phone: res.contactPhone,
+    rating_nps: res.ratingNps,
+    nps_justification: res.npsJustification,
+    rating_morning_activities: res.ratingMorningActivities,
+    impact_options: res.impactOptions,
+    impact_other: res.impactOther,
+    suggestions_improvement: res.suggestionsImprovement,
+    rating_future_engagement: res.ratingFutureEngagement,
+    engagement_format: res.engagementFormat
+  };
 }
 
 export function exportToCSV(responses: SurveyResponse[]): void {

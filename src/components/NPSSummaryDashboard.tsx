@@ -29,17 +29,13 @@ import { calculateNps, exportToCSV, MUNICIPALITIES, IMPACT_OPTIONS } from "../ut
 interface NPSSummaryDashboardProps {
   responses: SurveyResponse[];
   municipalities: Municipality[];
-  onResetData: () => void;
   onClearData: () => void;
-  onAddNewResponseSimulated: (res: SurveyResponse) => void;
 }
 
 export default function NPSSummaryDashboard({
   responses,
   municipalities,
-  onResetData,
-  onClearData,
-  onAddNewResponseSimulated
+  onClearData
 }: NPSSummaryDashboardProps) {
   // Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -48,7 +44,6 @@ export default function NPSSummaryDashboard({
 
   // Confirmation Modal States
   const [showResetConfirm, setShowResetConfirm] = useState<boolean>(false);
-  const [showRestoreConfirm, setShowRestoreConfirm] = useState<boolean>(false);
 
   // Filters State
   const [selectedMuniFilter, setSelectedMuniFilter] = useState<string>("all");
@@ -118,69 +113,7 @@ export default function NPSSummaryDashboard({
     return { text: "Zona de Excelência", color: "text-emerald-400 bg-emerald-950/25 border-emerald-900/40" };
   };
 
-  // Helper simulated response creator for quick dashboard assessment
-  const triggerSimulatedVote = () => {
-    const randomComments = [
-      "A reunião estreitou o relacionamento com capitais vizinhas, gerando grande valor de articulação política regional.",
-      "Excelente articulação com as prefeituras regionais. O compartilhamento de desafios foi o ponto alto.",
-      "Acreditamos que poderíamos ter explorado mais projetos práticos locais de saneamento.",
-      "O ecossistema montado pela Plataforma CSC nos ajudou a encontrar parceiros viáveis de infovias digitais.",
-      "Sentimos falta de foco no financiamento de projetos específicos de IoT."
-    ];
 
-    const randomImprovs = [
-      "Fazer debates temáticos divididos por secretarias setoriais na tarde.",
-      "Enviar apresentações de empresas parceiras com antecedência.",
-      "Ampliar o espaço de networking café de integração das delegações."
-    ];
-    
-    const municipalitiesList = MUNICIPALITIES;
-    const randomMuni = municipalitiesList[Math.floor(Math.random() * municipalitiesList.length)];
-    const ratingNps = Math.floor(Math.random() * 4) + 7; // 7, 8, 9, 10
-    const ratingMorning = Math.floor(Math.random() * 2) + 4; // 4, 5
-    const comment = randomComments[Math.floor(Math.random() * randomComments.length)];
-    const improv = randomImprovs[Math.floor(Math.random() * randomImprovs.length)];
-    
-    const names = [
-      "Juliana de Carvalho", "Carlos Alberto Ramos", "Sônia Albuquerque", 
-      "Guilherme de Souza", "Fernanda Schmidt", "Roberto Nogueira"
-    ];
-    const roles = [
-      "Secretária Executiva de Smart Cities", "Prefeito Municipal", 
-      "Diretor Adjunto de Tecnologia", "Assessor Técnico de Captação", 
-      "Coordenadora de Governança Urbana"
-    ];
-    
-    const formatChoices: Array<"total" | "depende" | "indisponivel"> = ["total", "depende"];
-    const ratingFuture = Math.floor(Math.random() * 2) + 4; // 4, 5
-
-    const randomImpactKeys = ["lideranca", "conexao", "dialogo", "atracao"];
-    const impactOptions = [
-      randomImpactKeys[Math.floor(Math.random() * randomImpactKeys.length)],
-      randomImpactKeys[Math.floor(Math.random() * randomImpactKeys.length)]
-    ].filter((value, index, self) => self.indexOf(value) === index); // unique values
-
-    const mockResponse: SurveyResponse = {
-      id: `sim-${Date.now()}`,
-      timestamp: new Date().toISOString(),
-      municipalityId: randomMuni.id,
-      municipalityName: randomMuni.name,
-      contactName: names[Math.floor(Math.random() * names.length)],
-      contactRole: roles[Math.floor(Math.random() * roles.length)],
-      contactEmail: "gestao.smart@prefeitura.gov.br",
-      contactPhone: "(11) 98000-0026",
-      ratingNps,
-      npsJustification: comment,
-      ratingMorningActivities: ratingMorning,
-      impactOptions,
-      suggestionsImprovement: improv,
-      ratingFutureEngagement: ratingFuture,
-      engagementFormat: formatChoices[Math.floor(Math.random() * formatChoices.length)],
-      isPreseeded: false
-    };
-
-    onAddNewResponseSimulated(mockResponse);
-  };
 
   // Auth block - Styled in premium dark theme with zero emoticons
   if (!isAuthenticated) {
@@ -248,15 +181,7 @@ export default function NPSSummaryDashboard({
 
         {/* Executive Action Controls */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Simulate Feedbacks button */}
-          <button
-            onClick={triggerSimulatedVote}
-            className="flex items-center space-x-1.5 py-2 px-3.5 bg-gradient-to-r from-[#14A3A1]/10 to-[#8ac926]/10 hover:from-[#14A3A1]/15 hover:to-[#8ac926]/15 text-white border border-[#14A3A1]/20 rounded-xl text-xs font-bold transition cursor-pointer"
-            title="Simular depoimento aleatório"
-          >
-            <RefreshCw className="w-3.5 h-3.5 text-[#14A3A1] animate-spin-slow" />
-            <span>Simular Relato</span>
-          </button>
+
 
           {/* Reset/Clear database button */}
           <button
@@ -268,15 +193,7 @@ export default function NPSSummaryDashboard({
             <span>Zerar Banco (Limpar Lote)</span>
           </button>
 
-          {/* Restore pre-seeded responses */}
-          <button
-            onClick={() => setShowRestoreConfirm(true)}
-            className="flex items-center space-x-1.5 py-2 px-3.5 bg-sky-500/10 hover:bg-sky-500/15 text-sky-400 border border-sky-500/20 rounded-xl text-xs font-bold transition cursor-pointer"
-            title="Restaurar dados de demonstração da Plataforma"
-          >
-            <RefreshCw className="w-3.5 h-3.5 text-sky-400" />
-            <span>Restaurar Demo</span>
-          </button>
+
 
           {/* Export CSV */}
           <button
@@ -757,48 +674,7 @@ export default function NPSSummaryDashboard({
         </div>
       )}
 
-      {/* Custom Confirmation Modal - Restaurar Demo */}
-      {showRestoreConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#070E1F] border border-sky-500/40 rounded-[24px] max-w-md w-full p-6 sm:p-8 shadow-2xl text-center space-y-5">
-            <div className="bg-sky-500/10 text-sky-400 w-14 h-14 rounded-2xl flex items-center justify-center mx-auto border border-sky-500/20">
-              <RefreshCw className="w-6 h-6" />
-            </div>
-            
-            <div className="space-y-2">
-              <h3 className="text-lg font-black text-white tracking-tight">
-                Restaurar Lote de Demonstração
-              </h3>
-              <p className="text-xs text-slate-450 leading-relaxed">
-                Deseja restaurar as 9 respostas estratégicas predefinidas da plataforma Connected Smart Cities para fins de demonstração?
-              </p>
-              <p className="text-[10px] text-sky-400/80 font-semibold bg-sky-500/5 py-2 px-3 rounded-lg border border-sky-500/10 inline-block w-full">
-                Os dados atuais do lote serão substituídos pelas respostas de demonstração padrão.
-              </p>
-            </div>
 
-            <div className="flex flex-col sm:flex-row gap-2.5 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowRestoreConfirm(false)}
-                className="w-full sm:flex-1 py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 transition cursor-pointer"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  onResetData();
-                  setShowRestoreConfirm(false);
-                }}
-                className="w-full sm:flex-1 py-2.5 px-4 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white text-xs font-black rounded-xl border border-sky-500/30 shadow-md transition cursor-pointer"
-              >
-                Restaurar Demo
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );
