@@ -10,8 +10,8 @@ export interface SurveyResponse {
   contactEmail: string;
   contactPhone: string;
 
-  // 3. Recomendar parceria com Plataforma CSC (NPS) - Escala de 0 a 10
-  ratingNps: number; // 0 to 10
+  // 3. Recomendar parceria com Plataforma CSC (NPS) - Escala de 0 a 5
+  ratingNps: number; // 0 to 5
   npsJustification: string; // Justificativa aberta
 
   // 4. Atividades do período da manhã - Escala de 0 a 5

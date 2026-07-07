@@ -3,7 +3,7 @@ import BrandHeader, { CidadeCSCLogo } from "./components/BrandHeader";
 import NPSWizardForm from "./components/NPSWizardForm";
 import NPSSummaryDashboard from "./components/NPSSummaryDashboard";
 import { Municipality, SurveyResponse } from "./types";
-import { MUNICIPALITIES, loadResponses, saveResponse, clearAllResponses } from "./utils";
+import { MUNICIPALITIES, loadResponses, saveResponse, resetToDefault, clearAllResponses } from "./utils";
 import { Sparkle, ShieldCheck, HelpCircle, Lock, FileText } from "lucide-react";
 
 export default function App() {
@@ -18,36 +18,41 @@ export default function App() {
   // Toggle mode: false = survey wizard, true = admin dashboard
   const [isAdminMode, setIsAdminMode] = useState<boolean>(false);
 
-  // Load from Supabase on mount
+  // Load from local storage on mount
   useEffect(() => {
-    async function fetchInitialData() {
-      const loaded = await loadResponses();
-      setResponses(loaded);
-    }
-    fetchInitialData();
+    const loaded = loadResponses();
+    setResponses(loaded);
   }, []);
 
   // Handle new submission
-  const handleSurveySubmit = async (newResponseData: Omit<SurveyResponse, "id" | "timestamp">) => {
+  const handleSurveySubmit = (newResponseData: Omit<SurveyResponse, "id" | "timestamp">) => {
     const completeResponse: SurveyResponse = {
       ...newResponseData,
       id: `rep-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       timestamp: new Date().toISOString()
     };
     
-    const updated = await saveResponse(completeResponse);
+    const updated = saveResponse(completeResponse);
     setResponses(updated);
   };
 
-
+  // Handle resetting responses database to default seeded data
+  const handleResetData = () => {
+    const restored = resetToDefault();
+    setResponses(restored);
+  };
 
   // Handle completely clearing responses database (zeroing out)
-  const handleClearData = async () => {
-    const cleared = await clearAllResponses();
+  const handleClearData = () => {
+    const cleared = clearAllResponses();
     setResponses(cleared);
   };
 
-
+  // Handle simulated inline add (for dashboard demonstratives)
+  const handleAddNewResponseSimulated = (res: SurveyResponse) => {
+    const updated = saveResponse(res);
+    setResponses(updated);
+  };
 
   // Secret Click counter on Logo to toggle admin mode elegantly
   const [logoClicks, setLogoClicks] = useState<number>(0);
@@ -181,7 +186,9 @@ export default function App() {
             <NPSSummaryDashboard
               responses={responses}
               municipalities={MUNICIPALITIES}
+              onResetData={handleResetData}
               onClearData={handleClearData}
+              onAddNewResponseSimulated={handleAddNewResponseSimulated}
             />
           )}
         </div>

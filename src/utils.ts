@@ -1,5 +1,4 @@
 import { SurveyResponse, Municipality } from "./types";
-import { supabase } from "./supabaseClient";
 
 export const MUNICIPALITIES: Municipality[] = [
   { id: "ponta-pora", name: "Ponta Porã", state: "MS" },
@@ -30,9 +29,9 @@ export const IMPACT_OPTIONS = [
 
 export interface NpsMetrics {
   total: number;
-  promoters: number; // 9-10
-  neutrals: number;  // 7-8
-  detractors: number; // 0-6
+  promoters: number; // 5
+  neutrals: number;  // 4
+  detractors: number; // 0-3
   score: number;
   avgMorningActivities: number; // 0-5
   avgFutureEngagement: number; // 0-5
@@ -70,10 +69,10 @@ export function calculateNps(responses: SurveyResponse[]): NpsMetrics {
   };
 
   responses.forEach((r) => {
-    // NPS Rating (0 to 10 scale)
-    if (r.ratingNps >= 9) {
+    // NPS Rating (0 to 5 scale)
+    if (r.ratingNps === 5) {
       promoters++;
-    } else if (r.ratingNps >= 7) {
+    } else if (r.ratingNps === 4) {
       neutrals++;
     } else {
       detractors++;
@@ -126,7 +125,7 @@ export const PRE_SEEDED_RESPONSES: SurveyResponse[] = [
     contactRole: "Secretário de Tecnologia e Inovação",
     contactEmail: "mateus.ribeiro@santanadeparnaiba.sp.gov.br",
     contactPhone: "(11) 98877-6655",
-    ratingNps: 10,
+    ratingNps: 5,
     npsJustification: "A reunião estratégica acelerou nosso alinhamento com fornecedores de ponta e nos inseriu no mapa nacional de Smart Cities pela Plataforma CSC. Essencial!",
     ratingMorningActivities: 5,
     impactOptions: ["lideranca", "conexao"],
@@ -144,7 +143,7 @@ export const PRE_SEEDED_RESPONSES: SurveyResponse[] = [
     contactRole: "Assessora de Assessoramento Estratégico",
     contactEmail: "camila.toledo@santos.sp.gov.br",
     contactPhone: "(13) 99122-3344",
-    ratingNps: 9,
+    ratingNps: 5,
     npsJustification: "Excelente oportunidade de benchmarking local. Santos pôde expor seus avanços de infovias municipais.",
     ratingMorningActivities: 4,
     impactOptions: ["lideranca", "dialogo"],
@@ -162,7 +161,7 @@ export const PRE_SEEDED_RESPONSES: SurveyResponse[] = [
     contactRole: "Subsecretário de Planejamento Urbano",
     contactEmail: "luis.fernando@niteroi.rj.gov.br",
     contactPhone: "(21) 97111-2233",
-    ratingNps: 8,
+    ratingNps: 4,
     npsJustification: "O debate de sustentabilidade nas cidades inteligentes foi muito bem guiado. O formato foi dinâmico.",
     ratingMorningActivities: 4,
     impactOptions: ["conexao", "atracao"],
@@ -180,7 +179,7 @@ export const PRE_SEEDED_RESPONSES: SurveyResponse[] = [
     contactRole: "Diretor de Smart Cities e Economia Criativa",
     contactEmail: "marcos.alencar@sjc.sp.gov.br",
     contactPhone: "(12) 98122-8899",
-    ratingNps: 10,
+    ratingNps: 5,
     npsJustification: "Como primeiro município de categoria tecnológica certificada, hospedar a reunião regional gerou enorme impacto político de visibilidade e interesse de startups.",
     ratingMorningActivities: 5,
     impactOptions: ["lideranca", "atracao"],
@@ -198,7 +197,7 @@ export const PRE_SEEDED_RESPONSES: SurveyResponse[] = [
     contactRole: "Secretária Municipal de Planejamento e Assuntos Digitais",
     contactEmail: "debora.martins@portoalegre.rs.gov.br",
     contactPhone: "(51) 99344-5566",
-    ratingNps: 7,
+    ratingNps: 4,
     npsJustification: "A estrutura de facilitação e debate foi boa, mas queríamos mais soluções práticas operacionais com orçamentos condizentes a médias capitais.",
     ratingMorningActivities: 3,
     impactOptions: ["dialogo", "conexao"],
@@ -216,7 +215,7 @@ export const PRE_SEEDED_RESPONSES: SurveyResponse[] = [
     contactRole: "Coordenador do Vale da Eletrônica",
     contactEmail: "augusto.bueno@santasabrina.mg.gov.br",
     contactPhone: "(35) 98845-1122",
-    ratingNps: 10,
+    ratingNps: 5,
     npsJustification: "Nossa tradição em IoT corporativa foi posta em alto debate. Excelente público sênior das prefeituras adjacentes.",
     ratingMorningActivities: 5,
     impactOptions: ["lideranca", "dialogo"],
@@ -234,7 +233,7 @@ export const PRE_SEEDED_RESPONSES: SurveyResponse[] = [
     contactRole: "Secretário de Ciência, Tecnologia e Inovação",
     contactEmail: "eduardo.scherer@patobranco.pr.gov.br",
     contactPhone: "(46) 99201-1551",
-    ratingNps: 9,
+    ratingNps: 5,
     npsJustification: "Nos aproximou de outras prefeituras com desafios correlatos aos nossos (Caxias, Pinhais). Sinergia instantânea.",
     ratingMorningActivities: 4,
     impactOptions: ["dialogo", "conexao"],
@@ -252,7 +251,7 @@ export const PRE_SEEDED_RESPONSES: SurveyResponse[] = [
     contactRole: "Assessora de Transformação Social e Governo Digital",
     contactEmail: "patricia.nogueira@senadorcanedo.go.gov.br",
     contactPhone: "(62) 98144-2233",
-    ratingNps: 6,
+    ratingNps: 3,
     npsJustification: "O debate foca muito nas capitais e grandes metrópoles, sentimos falta de soluções sob medida para municípios de faixa populacional média.",
     ratingMorningActivities: 3,
     impactOptions: ["conexao"],
@@ -271,7 +270,7 @@ export const PRE_SEEDED_RESPONSES: SurveyResponse[] = [
     contactRole: "Diretor Executivo da COP 30 Municipal",
     contactEmail: "felipe.cop@belem.pa.gov.br",
     contactPhone: "(91) 98111-9922",
-    ratingNps: 10,
+    ratingNps: 5,
     npsJustification: "Fabuloso para preparar Belém em governança verde rumo à COP. Plataforma séria e muito respeitada nacionalmente.",
     ratingMorningActivities: 5,
     impactOptions: ["lideranca", "atracao"],
@@ -282,99 +281,52 @@ export const PRE_SEEDED_RESPONSES: SurveyResponse[] = [
   }
 ];
 
-export async function loadResponses(): Promise<SurveyResponse[]> {
+const STORAGE_KEY = "csc_prefe_nps_survey_responses_v2";
+
+export function loadResponses(): SurveyResponse[] {
   try {
-    const { data, error } = await supabase
-      .from('nps_evento_reunioes_estrategicas_prefeituras')
-      .select('*')
-      .order('created_at', { ascending: false });
-      
-    if (error) {
-      console.error("Erro ao carregar respostas do Supabase", error);
-      return [];
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (!data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(PRE_SEEDED_RESPONSES));
+      return PRE_SEEDED_RESPONSES;
     }
-    
-    return (data || []).map(mapFromSupabase);
+    return JSON.parse(data);
   } catch (error) {
-    console.error("Erro inesperado ao carregar", error);
+    console.error("Erro ao carregar respostas do localStorage", error);
+    return PRE_SEEDED_RESPONSES;
+  }
+}
+
+export function saveResponse(response: SurveyResponse): SurveyResponse[] {
+  try {
+    const current = loadResponses();
+    const updated = [response, ...current];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    return updated;
+  } catch (error) {
+    console.error("Erro ao salvar resposta no localStorage", error);
     return [];
   }
 }
 
-export async function saveResponse(response: SurveyResponse): Promise<SurveyResponse[]> {
+export function resetToDefault(): SurveyResponse[] {
   try {
-    const { error } = await supabase
-      .from('nps_evento_reunioes_estrategicas_prefeituras')
-      .insert([mapToSupabase(response)]);
-      
-    if (error) {
-      console.error("Erro ao salvar resposta no Supabase", error);
-    }
-    return await loadResponses();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(PRE_SEEDED_RESPONSES));
+    return PRE_SEEDED_RESPONSES;
   } catch (error) {
-    console.error("Erro inesperado ao salvar", error);
-    return await loadResponses();
+    console.error("Erro ao reiniciar dados", error);
+    return PRE_SEEDED_RESPONSES;
   }
 }
 
-export async function clearAllResponses(): Promise<SurveyResponse[]> {
+export function clearAllResponses(): SurveyResponse[] {
   try {
-    const { error } = await supabase
-      .from('nps_evento_reunioes_estrategicas_prefeituras')
-      .delete()
-      .neq('id', 'dummy_value_to_delete_all');
-      
-    if (error) {
-      console.error("Erro ao zerar dados no Supabase", error);
-    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
     return [];
   } catch (error) {
-    console.error("Erro inesperado ao zerar", error);
+    console.error("Erro ao zerar dados", error);
     return [];
   }
-}
-
-function mapFromSupabase(row: any): SurveyResponse {
-  return {
-    id: row.id,
-    timestamp: row.created_at,
-    municipalityId: row.municipality_id,
-    municipalityName: row.municipality_name,
-    contactName: row.contact_name,
-    contactRole: row.contact_role,
-    contactEmail: row.contact_email,
-    contactPhone: row.contact_phone || "",
-    ratingNps: row.rating_nps,
-    npsJustification: row.nps_justification || "",
-    ratingMorningActivities: row.rating_morning_activities,
-    impactOptions: row.impact_options || [],
-    impactOther: row.impact_other || "",
-    suggestionsImprovement: row.suggestions_improvement || "",
-    ratingFutureEngagement: row.rating_future_engagement,
-    engagementFormat: row.engagement_format || "",
-    isPreseeded: false
-  };
-}
-
-function mapToSupabase(res: SurveyResponse): any {
-  return {
-    id: res.id,
-    created_at: res.timestamp,
-    municipality_id: res.municipalityId,
-    municipality_name: res.municipalityName,
-    contact_name: res.contactName,
-    contact_role: res.contactRole,
-    contact_email: res.contactEmail,
-    contact_phone: res.contactPhone,
-    rating_nps: res.ratingNps,
-    nps_justification: res.npsJustification,
-    rating_morning_activities: res.ratingMorningActivities,
-    impact_options: res.impactOptions,
-    impact_other: res.impactOther,
-    suggestions_improvement: res.suggestionsImprovement,
-    rating_future_engagement: res.ratingFutureEngagement,
-    engagement_format: res.engagementFormat
-  };
 }
 
 export function exportToCSV(responses: SurveyResponse[]): void {

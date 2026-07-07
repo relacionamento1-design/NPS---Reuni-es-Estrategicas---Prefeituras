@@ -184,9 +184,9 @@ export default function NPSWizardForm({ municipality, onSubmit }: NPSWizardFormP
   // NPS Label text mappings - fully dark-mode responsive with NO EMOJIS (as requested)
   const getNpsFeedback = (num: number | null) => {
     if (num === null) return { text: "Toque em uma nota na régua", color: "text-slate-400", bg: "bg-slate-800/20" };
-    if (num <= 4) return { text: "Recomenda com reservas (Detrator)", color: "text-rose-400", bg: "bg-rose-950/35" };
-    if (num <= 6) return { text: "Pouco provável de recomendar (Detrator)", color: "text-orange-400", bg: "bg-orange-950/35" };
-    if (num <= 8) return { text: "Recomenda com neutralidade (Passivo)", color: "text-sky-400", bg: "bg-sky-950/35" };
+    if (num <= 2) return { text: "Recomenda com reservas (Detrator)", color: "text-rose-400", bg: "bg-rose-950/35" };
+    if (num === 3) return { text: "Pouco provável de recomendar (Detrator)", color: "text-orange-400", bg: "bg-orange-950/35" };
+    if (num === 4) return { text: "Recomenda com neutralidade (Passivo)", color: "text-sky-400", bg: "bg-sky-950/35" };
     return { text: "Altamente provável de recomendar (Promotor)", color: "text-emerald-400 font-bold", bg: "bg-emerald-950/35" };
   };
 
@@ -535,7 +535,7 @@ export default function NPSWizardForm({ municipality, onSubmit }: NPSWizardFormP
                   </motion.div>
                 )}
 
-                {/* STEP 3: NPS EVALUATION (0 to 10 scale) */}
+                {/* STEP 3: NPS EVALUATION (0 to 5 scale) */}
                 {step === 3 && (
                   <motion.div
                     key="step-3"
@@ -552,7 +552,7 @@ export default function NPSWizardForm({ municipality, onSubmit }: NPSWizardFormP
                         Probabilidade de recomendar a parceria com a Plataforma CSC
                       </h2>
                       <p className="text-xs sm:text-sm text-slate-300 font-sans leading-relaxed">
-                        "Em uma escala de 0 a 10, considerando toda a experiência da sua prefeitura ao sediar a Reunião Estratégica Regional em 2026, qual é a probabilidade de você recomendar a parceria com a Plataforma CSC para outros municípios brasileiros?"
+                        "Em uma escala de 0 a 5, considerando toda a experiência da sua prefeitura ao sediar a Reunião Estratégica Regional em 2026, qual é a probabilidade de você recomendar a parceria com a Plataforma CSC para outros municípios brasileiros?"
                       </p>
                     </div>
 
@@ -561,7 +561,7 @@ export default function NPSWizardForm({ municipality, onSubmit }: NPSWizardFormP
                       <div className="mb-5 flex justify-center">
                         {ratingNps !== null ? (
                           <span className="text-xs text-white font-extrabold uppercase tracking-wider">
-                            Nota Selecionada: <strong className="text-[#14A3A1] text-sm font-black">{ratingNps} de 10</strong>
+                            Nota Selecionada: <strong className="text-[#14A3A1] text-sm font-black">{ratingNps} de 5</strong>
                           </span>
                         ) : (
                           <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Escolha uma nota na régua</span>
@@ -570,12 +570,13 @@ export default function NPSWizardForm({ municipality, onSubmit }: NPSWizardFormP
 
                       {/* Score numbers block */}
                       <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
-                        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((val) => {
+                        {[0, 1, 2, 3, 4, 5].map((val) => {
                           const isSelected = ratingNps === val;
                           let btnColor = "bg-[#070e1f] border-[#1E3E8C]/35 text-slate-200 hover:border-[#14A3A1]/50";
                           if (isSelected) {
-                            if (val <= 6) btnColor = "bg-rose-500 text-white border-rose-500 shadow-[0_0_15px_rgba(239,68,68,0.25)]";
-                            else if (val <= 8) btnColor = "bg-[#F58F22] text-white border-[#F58F22] shadow-[0_0_15px_rgba(245,143,34,0.25)]";
+                            if (val <= 2) btnColor = "bg-rose-500 text-white border-rose-500 shadow-[0_0_15px_rgba(239,68,68,0.25)]";
+                            else if (val === 3) btnColor = "bg-[#F58F22] text-white border-[#F58F22] shadow-[0_0_15px_rgba(245,143,34,0.25)]";
+                            else if (val === 4) btnColor = "bg-sky-500 text-white border-sky-500 shadow-[0_0_15px_rgba(14,163,161,0.25)]";
                             else btnColor = "bg-emerald-500 text-white border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.25)]";
                           }
                           return (
